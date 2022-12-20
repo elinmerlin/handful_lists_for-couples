@@ -82,7 +82,7 @@ async def mark_as_bought(message):
         for item in bought_products:
             item.bought = '✅'
         session.commit()
-        await bot.send_message(message.chat.id, BRODUCT_BOUGHT_MESSAGE)
+        await bot.send_message(message.chat.id, PRODUCT_BOUGHT_MESSAGE)
 
 
 @bot.message_handler(content_types=['text'])
