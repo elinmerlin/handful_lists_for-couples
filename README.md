@@ -19,26 +19,26 @@ Here you can see some examples of bot's work:
 
 To start your own bot based on this logic you should do the following:
 
-- Download the repository;
-- Create a file .env with the variables such as: 
+1) Download the repository;
+2) Create a file .env with the variables such as: 
 
     >- DATABASE_URL=postgresql://username:password@db:5432/tables_db
     >- TOKEN (get it from https://t.me/BotFather)
     >- FIRST_USER (this is a message.chat.id which you can find in https://t.me/RawDataBot)
     >- SECOND_USER (message.chat.id for another person)
 
-- to deploy the app from the root folder:
+3) to deploy the app from the root folder:
 
     docker-compose up -d --build
   
-- to launch the bot:
+4) to launch the bot:
 
     docker-compose run --rm -d --name bot app /app/telegram_bot.py
   
-- to stop the bot:
+5) to stop the bot:
 
     docker stop bot
   
-- to switch containers off:
+6) to switch containers off:
 
     docker-compose down
