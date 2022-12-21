@@ -21,3 +21,10 @@ DELETED_MESSAGE = 'The last entry of the table has been deleted'
 PRODUCT_BOUGHT_MESSAGE = 'You have just bought something. Hopefully something tasty!😋'
 
 EMPTY_TABLE_MESSAGE = 'The table is already empty!🤷‍♀️'
+
+NEW_ENTRY_MESSAGE = {
+    '/addMovie': MOVIE_MESSAGE,
+    '/addPlace': PLACE_MESSAGE,
+    '/addGrocery': GROCERY_MESSAGE,
+    '/addNote': NOTE_MESSAGE,
+}

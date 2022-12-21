@@ -9,11 +9,16 @@ import database as db
 from constants import *
 
 bot = AsyncTeleBot(os.getenv('TOKEN'))
+FIRST_USER = int(os.getenv('FIRST_USER'))
+SECOND_USER = int(os.getenv('SECOND_USER'))
 
 
 @bot.message_handler(commands=['movies', 'places', 'grocery', 'notes'])
 async def tables(message):
     """ Quick access to the tables """
+
+    if message.chat.id not in (FIRST_USER, SECOND_USER):
+        return
 
     buttons = ['/movies', '/places', '/grocery', '/notes']
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -27,33 +32,33 @@ async def tables(message):
 async def add_into_table(message):
     """ Adds an entry into the table """
 
+    if message.chat.id not in (FIRST_USER, SECOND_USER):
+        return
+
+    add_table = message.text.split(maxsplit=1)[0]
+    entry = message.text.removeprefix(add_table)
+
     with db.Session() as session:
-        if message.text.startswith('/addMovie'):
-            entry = message.text.removeprefix('/addMovie')
+        if add_table == '/addMovie':
             session.add(db.Movies(movie=entry))
-            await bot.send_message(message.chat.id, MOVIE_MESSAGE)
-
-        elif message.text.startswith('/addPlace'):
-            entry = message.text.removeprefix('/addPlace')
+        elif add_table == '/addPlace':
             session.add(db.Places(place=entry))
-            await bot.send_message(message.chat.id, PLACE_MESSAGE)
-
-        elif message.text.startswith('/addGrocery'):
-            entry = message.text.removeprefix('/addGrocery')
+        elif add_table == '/addGrocery':
             session.add(db.Grocery(product=entry))
-            await bot.send_message(message.chat.id, GROCERY_MESSAGE)
-
         else:
-            entry = message.text.removeprefix('/addNote')
             session.add(db.Notes(note=entry))
-            await bot.send_message(message.chat.id, NOTE_MESSAGE)
-
         session.commit()
+
+    await bot.send_message(FIRST_USER, NEW_ENTRY_MESSAGE[add_table])
+    await bot.send_message(SECOND_USER, NEW_ENTRY_MESSAGE[add_table])
 
 
 @bot.message_handler(commands=['delMovie', 'delPlace', 'delGrocery', 'delNote'])
 async def delete_from_the_table(message):
     """ Deletes the last entry from the table """
+
+    if message.chat.id not in (FIRST_USER, SECOND_USER):
+        return
 
     with db.Session() as session:
         if message.text.startswith('/delMovie'):
@@ -77,6 +82,9 @@ async def delete_from_the_table(message):
 async def mark_as_bought(message):
     """ Marks a product from the Grocery table as bought """
 
+    if message.chat.id not in (FIRST_USER, SECOND_USER):
+        return
+
     product_id = message.text.removeprefix('/bought')
     with db.Session() as session:
         bought_products = session.query(db.Grocery).filter(db.Grocery.id == product_id).all()
@@ -89,6 +97,9 @@ async def mark_as_bought(message):
 @bot.message_handler(content_types=['text'])
 async def handle_text(message):
     """ Handles any other text messages """
+
+    if message.chat.id not in (FIRST_USER, SECOND_USER):
+        return
 
     await bot.send_message(message.chat.id, HELP_MESSAGE)
 
