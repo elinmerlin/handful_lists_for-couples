@@ -27,19 +27,20 @@ To start your own bot based on this logic you should do the following:
     >- FIRST_USER (this is a message.chat.id which you can find in https://t.me/RawDataBot)
     >- SECOND_USER (message.chat.id for another person)
 
-3) to deploy the app from the root folder:
+3) Deploy the app using Docker.
 
+to deploy the app from the root folder:
 
     docker-compose up -d --build
-4) to launch the bot:
 
+to launch the bot:
 
     docker-compose run --rm -d --name bot app /app/telegram_bot.py
-5) to stop the bot:
 
+to stop the bot:
 
     docker stop bot
-6) to switch containers off:
 
+to switch containers off:
 
     docker-compose down
