@@ -1,7 +1,7 @@
 import os
 from datetime import date
 
-from sqlalchemy import Column, Integer, String, create_engine, DateTime
+from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -10,6 +10,7 @@ Session = sessionmaker(bind=engine)
 
 
 class Movies(Base):
+    """ Creates a table to store the films to watch later """
     __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True)
@@ -17,6 +18,7 @@ class Movies(Base):
 
 
 class Places(Base):
+    """ Creates a table to store events/places to visit together """
     __tablename__ = "places"
 
     id = Column(Integer, primary_key=True)
@@ -24,6 +26,7 @@ class Places(Base):
 
 
 class Grocery(Base):
+    """ Creates a table to store shopping list """
     __tablename__ = "grocery"
 
     id = Column(Integer, primary_key=True)
@@ -33,6 +36,7 @@ class Grocery(Base):
 
 
 class Notes(Base):
+    """ Creates a table to store nice little notes for each other """
     __tablename__ = "notes"
 
     id = Column(Integer, primary_key=True)
