@@ -1,11 +1,11 @@
+import asyncio
 import os
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
-import asyncio
 import pandas as pd
 
-import data.database as db
+import database as db
 from constants import *
 
 bot = AsyncTeleBot(os.getenv('TOKEN'))
@@ -18,16 +18,16 @@ async def tables(message):
     buttons = ['/movies', '/places', '/grocery', '/notes']
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*buttons)
-
-    table = pd.read_sql_table(table_name=message[1:], con=db.engine)
-    await bot.send_message(message.chat.id, table, reply_markup=keyboard)
+    table = pd.read_sql_table(table_name=message.text[1:], con=db.engine)
+    markdown_table = table.to_markdown(tablefmt="simple", index=False)
+    await bot.send_message(message.chat.id, markdown_table, reply_markup=keyboard)
 
 
 @bot.message_handler(commands=['addMovie', 'addPlace', 'addGrocery', 'addNote'])
 async def add_into_table(message):
     """ Adds an entry into the table """
 
-    async with db.Session() as session:
+    with db.Session() as session:
         if message.text.startswith('/addMovie'):
             entry = message.text.removeprefix('/addMovie')
             session.add(db.Movies(movie=entry))
@@ -55,29 +55,30 @@ async def add_into_table(message):
 async def delete_from_the_table(message):
     """ Deletes the last entry from the table """
 
-    async with db.Session() as session:
-        if message.startswith('/delMovie'):
-            entry = session.query(db.Movies).order_by(db.Movies.id)[-1]
-            await bot.send_message(message.chat.id, MOVIE_DEL_MESSAGE)
-        elif message.startswith('/delPlace'):
-            entry = session.query(db.Places).order_by(db.Places.id)[-1]
-            await bot.send_message(message.chat.id, PLACE_DEL_MESSAGE)
-        elif message.startswith('/delGrocery'):
-            entry = session.query(db.Grocery).order_by(db.Grocery.id)[-1]
-            await bot.send_message(message.chat.id, GROCERY_DEL_MESSAGE)
+    with db.Session() as session:
+        if message.text.startswith('/delMovie'):
+            entry = session.query(db.Movies).order_by(db.Movies.id)
+        elif message.text.startswith('/delPlace'):
+            entry = session.query(db.Places).order_by(db.Places.id)
+        elif message.text.startswith('/delGrocery'):
+            entry = session.query(db.Grocery).order_by(db.Grocery.id)
         else:
-            entry = session.query(db.Notes).order_by(db.Notes.id)[-1]
-            await bot.send_message(message.chat.id, NOTES_DEL_MESSAGE)
-        session.delete(entry)
-        session.commit()
+            entry = session.query(db.Notes).order_by(db.Notes.id)
+
+        if any(entry):
+            session.delete(entry[-1])
+            session.commit()
+            await bot.send_message(message.chat.id, DELETED_MESSAGE)
+        else:
+            await bot.send_message(message.chat.id, EMPTY_TABLE_MESSAGE)
 
 
 @bot.message_handler(commands=['bought'])
 async def mark_as_bought(message):
     """ Marks a product from the Grocery table as bought """
 
-    product = message.removeprefix('/bought')
-    async with db.Session() as session:
+    product = message.text.removeprefix('/bought')
+    with db.Session() as session:
         bought_products = session.query(db.Grocery).filter(db.Grocery.product == product).all()
         for item in bought_products:
             item.bought = '✅'
