@@ -4,8 +4,8 @@ import datetime
 from sqlalchemy import Column, Integer, String, create_engine, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine("sqlite:///gs2.db")
+# engine = create_engine(os.getenv("DATABASE_URL"))
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
