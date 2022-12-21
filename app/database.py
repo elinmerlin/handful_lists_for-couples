@@ -1,11 +1,10 @@
 import os
-import datetime
+from datetime import date
 
 from sqlalchemy import Column, Integer, String, create_engine, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-engine = create_engine("sqlite:///gs2.db")
-# engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(os.getenv("DATABASE_URL"))
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
@@ -28,7 +27,7 @@ class Grocery(Base):
     __tablename__ = "grocery"
 
     id = Column(Integer, primary_key=True)
-    date = Column(DateTime(timezone=True), default=datetime.date.today)
+    date = Column(String(10), default=date.today().strftime("%Y-%m-%d"))
     product = Column(String(20))
     bought = Column(String(10), default='🚫')
 
