@@ -2,11 +2,11 @@
 
 HELP_MESSAGE = 'Hello dear! 😘 Please type /movies, /places, /grocery or /notes to get the tables. \n' \
                'To add into the table use commands: \n' \
-               '- /addMovie, /addPlace, /addGrocery, /addNote following with the necessary text \n' \
+               '- /addMovie, /addPlace, /addGrocery, /addNote following with the necessary text. \n' \
                'To delete the last entry from the table: \n' \
                '- /delMovie, /delPlace, /delGrocery, /delNote \n' \
                'To mark a product as bought: \n' \
-               '- /bought <product name from the table>'
+               '- /bought <product id from the table>'
 
 MOVIE_MESSAGE = 'The Movies table has been updated'
 

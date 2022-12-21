@@ -77,9 +77,9 @@ async def delete_from_the_table(message):
 async def mark_as_bought(message):
     """ Marks a product from the Grocery table as bought """
 
-    product = message.text.removeprefix('/bought')
+    product_id = message.text.removeprefix('/bought')
     with db.Session() as session:
-        bought_products = session.query(db.Grocery).filter(db.Grocery.product == product).all()
+        bought_products = session.query(db.Grocery).filter(db.Grocery.id == product_id).all()
         for item in bought_products:
             item.bought = '✅'
         session.commit()
