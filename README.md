@@ -29,16 +29,16 @@ To start your own bot based on this logic you should do the following:
 
 - to deploy the app from the root folder:
 
-  docker-compose up -d --build
+    docker-compose up -d --build
   
 - to launch the bot:
 
-  docker-compose run --rm -d --name bot app /app/telegram_bot.py
+    docker-compose run --rm -d --name bot app /app/telegram_bot.py
   
 - to stop the bot:
 
-  docker stop bot
+    docker stop bot
   
 - to switch containers off:
 
-  docker-compose down
+    docker-compose down
