@@ -11,4 +11,4 @@ functionality:
 - mark as done/undone
 - notifications?
 
-Make it private 
+Make it private
