@@ -3,6 +3,7 @@ import os
 
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
+from telebot import asyncio_filters
 import pandas as pd
 
 import database as db
@@ -13,12 +14,9 @@ FIRST_USER = int(os.getenv('FIRST_USER'))
 SECOND_USER = int(os.getenv('SECOND_USER'))
 
 
-@bot.message_handler(commands=['movies', 'places', 'grocery', 'notes'])
+@bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], commands=['movies', 'places', 'grocery', 'notes'])
 async def tables(message):
     """ Quick access to the tables """
-
-    if message.chat.id not in (FIRST_USER, SECOND_USER):
-        return
 
     buttons = ['/movies', '/places', '/grocery', '/notes']
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -28,12 +26,9 @@ async def tables(message):
     await bot.send_message(message.chat.id, markdown_table, reply_markup=keyboard)
 
 
-@bot.message_handler(commands=['addMovie', 'addPlace', 'addGrocery', 'addNote'])
+@bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], commands=['addMovie', 'addPlace', 'addGrocery', 'addNote'])
 async def add_into_table(message):
     """ Adds an entry into the table """
-
-    if message.chat.id not in (FIRST_USER, SECOND_USER):
-        return
 
     add_table = message.text.split(maxsplit=1)[0]
     entry = message.text.removeprefix(add_table)
@@ -53,12 +48,9 @@ async def add_into_table(message):
     await bot.send_message(SECOND_USER, NEW_ENTRY_MESSAGE[add_table])
 
 
-@bot.message_handler(commands=['delMovie', 'delPlace', 'delGrocery', 'delNote'])
+@bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], commands=['delMovie', 'delPlace', 'delGrocery', 'delNote'])
 async def delete_from_the_table(message):
     """ Deletes the last entry from the table """
-
-    if message.chat.id not in (FIRST_USER, SECOND_USER):
-        return
 
     with db.Session() as session:
         if message.text.startswith('/delMovie'):
@@ -78,12 +70,9 @@ async def delete_from_the_table(message):
             await bot.send_message(message.chat.id, EMPTY_TABLE_MESSAGE)
 
 
-@bot.message_handler(commands=['bought'])
+@bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], commands=['bought'])
 async def mark_as_bought(message):
     """ Marks a product from the Grocery table as bought """
-
-    if message.chat.id not in (FIRST_USER, SECOND_USER):
-        return
 
     product_id = message.text.removeprefix('/bought')
     with db.Session() as session:
@@ -94,14 +83,12 @@ async def mark_as_bought(message):
         await bot.send_message(message.chat.id, PRODUCT_BOUGHT_MESSAGE)
 
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], content_types=['text'])
 async def handle_text(message):
     """ Handles any other text messages """
-
-    if message.chat.id not in (FIRST_USER, SECOND_USER):
-        return
 
     await bot.send_message(message.chat.id, HELP_MESSAGE)
 
 
+bot.add_custom_filter(asyncio_filters.ChatFilter())
 asyncio.run(bot.polling())
