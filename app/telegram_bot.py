@@ -76,11 +76,11 @@ async def mark_as_bought(message):
 
     product_id = message.text.removeprefix('/bought')
     with db.Session() as session:
-        bought_products = session.query(db.Grocery).filter(db.Grocery.id == product_id).all()
-        for item in bought_products:
-            item.bought = '✅'
-        session.commit()
-        await bot.send_message(message.chat.id, PRODUCT_BOUGHT_MESSAGE)
+        product = session.query(db.Grocery).filter(db.Grocery.id == product_id).one_or_none()
+        if product:
+            product.bought = '✅'
+            session.commit()
+            await bot.send_message(message.chat.id, PRODUCT_BOUGHT_MESSAGE)
 
 
 @bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], content_types=['text'])
