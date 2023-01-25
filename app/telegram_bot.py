@@ -30,22 +30,22 @@ async def tables(message):
 async def add_into_table(message):
     """ Adds an entry into the table """
 
-    add_table = message.text.split(maxsplit=1)[0]
-    entry = message.text.removeprefix(add_table)
-
+    message = message.text.split(maxsplit=1)
+    table_name = message[0]
     with db.Session() as session:
-        if add_table == '/addMovie':
-            session.add(db.Movies(movie=entry))
-        elif add_table == '/addPlace':
-            session.add(db.Places(place=entry))
-        elif add_table == '/addGrocery':
-            session.add(db.Grocery(product=entry))
-        else:
-            session.add(db.Notes(note=entry))
+        match message:
+            case ['/addMovie', entry]:
+                session.add(db.Movies(movie=entry))
+            case ['/addPlace', entry]:
+                session.add(db.Places(place=entry))
+            case ['/addGrocery', entry]:
+                session.add(db.Grocery(product=entry))
+            case ['/addNote', entry]:
+                session.add(db.Notes(note=entry))
         session.commit()
 
-    await bot.send_message(FIRST_USER, NEW_ENTRY_MESSAGE[add_table])
-    await bot.send_message(SECOND_USER, NEW_ENTRY_MESSAGE[add_table])
+    await bot.send_message(FIRST_USER, NEW_ENTRY_MESSAGE[table_name])
+    await bot.send_message(SECOND_USER, NEW_ENTRY_MESSAGE[table_name])
 
 
 @bot.message_handler(chat_id=[FIRST_USER, SECOND_USER], commands=['delMovie', 'delPlace', 'delGrocery', 'delNote'])
@@ -53,14 +53,15 @@ async def delete_from_the_table(message):
     """ Deletes the last entry from the table """
 
     with db.Session() as session:
-        if message.text.startswith('/delMovie'):
-            entry = session.query(db.Movies).order_by(db.Movies.id)
-        elif message.text.startswith('/delPlace'):
-            entry = session.query(db.Places).order_by(db.Places.id)
-        elif message.text.startswith('/delGrocery'):
-            entry = session.query(db.Grocery).order_by(db.Grocery.id)
-        else:
-            entry = session.query(db.Notes).order_by(db.Notes.id)
+        match message.text:
+            case '/delMovie':
+                entry = session.query(db.Movies).order_by(db.Movies.id)
+            case '/delPlace':
+                entry = session.query(db.Places).order_by(db.Places.id)
+            case '/delGrocery':
+                entry = session.query(db.Grocery).order_by(db.Grocery.id)
+            case '/delNote':
+                entry = session.query(db.Notes).order_by(db.Notes.id)
 
         if any(entry):
             session.delete(entry[-1])
